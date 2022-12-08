@@ -1,10 +1,20 @@
-from fastapi import FastAPI, Response, status, HTTPException
-from fastapi.params import Body
-from pydantic import BaseModel
-from typing import Optional
 from random import randrange
+from typing import Optional
+import time
+import os
+
 import psycopg2
+from fastapi import FastAPI, HTTPException, Response, status
+from fastapi.params import Body
 from psycopg2.extras import RealDictCursor
+from pydantic import BaseModel
+from dotenv import load_dotenv
+
+from app.utils import FilePrinter, Logger, TerminalPrinter
+
+load_dotenv()
+
+logger = Logger()
 
 app = FastAPI()
 
@@ -14,33 +24,33 @@ class Post(BaseModel):
     content: str
     published: bool = True
 
+while True:
+    try:
+        connection = psycopg2.connect(
+            host=os.getenv("HOST"), 
+            database=os.getenv("DATABASE"), 
+            user=os.getenv("PSQL_USER"), 
+            password=os.getenv("PASSWORD"), 
+            cursor_factory=RealDictCursor
+        )
+        cursor = connection.cursor()
+        logger.log("Succesfull Database connection", FilePrinter)
+        break
 
-try:
-    connection = psycopg2.connect(
-        host='localhost', 
-        database='social_media_api', 
-        user='postgres', 
-        password='prestigio', 
-        cursor_factory=RealDictCursor
-    )
-    cursor = connection.cursor()
-    print("Succesfull Database connection")
-except Exception as error:
-    print("Connecting to Databse failed")
-    print(f"Error: {error}")
-
-
-my_posts = [
-    {"title": "test1", "content": "test_content1", "id": 1},
-    {"title": "test2", "content": "test_content2", "id": 2}
-]
+    except Exception as error:
+        logger.log(f"Connecting to Databse failed with error: {error}", FilePrinter)
+        logger.log(f"Connecting failed, error: {error}", TerminalPrinter)
+        time.sleep(5)
 
 
 def find_post(id):
     """Return post by id"""
     for obj in my_posts:
-        if obj["id"] == id:
-            return obj
+        try:
+            if obj["id"] == id:
+                return obj
+        except Exception as error:
+            raise f"obj with id {id} does not exist"
 
 
 def find_post_index(id):
