@@ -1,7 +1,7 @@
 import os
 import time
 from random import randrange
-from typing import Optional
+from typing import Optional, List
 
 # import psycopg2
 from dotenv import load_dotenv
@@ -34,7 +34,7 @@ def root():
 
 
 @app.get("/posts")
-def get_posts(db: Session = Depends(get_db)):
+def get_posts(db: Session = Depends(get_db)) -> List[models.Post]:
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
@@ -42,7 +42,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 @app.get("/posts/{id}")
-def get_post(id: int, db: Session = Depends(get_db)):
+def get_post(id: int, db: Session = Depends(get_db)) -> models.Post:
     # cursor.execute(
     #     """
     #     SELECT * 
@@ -56,7 +56,7 @@ def get_post(id: int, db: Session = Depends(get_db)):
 
     if not post:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND, 
             detail=f"post with the id: {id} not found"
         )
 
@@ -64,7 +64,8 @@ def get_post(id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: schemas.Post, db: Session = Depends(get_db)):
+def create_post(post: schemas.InputPost, 
+                db: Session = Depends(get_db)) -> models.Post:
     # cursor.execute(
     #     """
     #     INSERT INTO posts (title, content, is_published) 
@@ -84,7 +85,7 @@ def create_post(post: schemas.Post, db: Session = Depends(get_db)):
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, db: Session = Depends(get_db)):
+def delete_post(id: int, db: Session = Depends(get_db)) -> None:
     # cursor.execute(
     #     """
     #     DELETE FROM posts 
@@ -109,9 +110,8 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id}")
-def update_post(
-    id: int, updated_post: schemas.Post, db: Session = Depends(get_db)
-):
+def update_post(id: int, updated_post: schemas.InputPost, 
+                db: Session = Depends(get_db)) -> models.Post:
     # cursor.execute(
     #     """
     #     UPDATE posts
