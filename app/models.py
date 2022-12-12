@@ -1,9 +1,8 @@
-from sqlalchemy import (
-    Boolean, Column, ForeignKey, 
-    Integer, String, Text, BOOLEAN
-)
-from sqlalchemy.sql.sqltypes import TIMESTAMP
+from sqlalchemy import (BOOLEAN, Boolean, Column, ForeignKey, Integer, String,
+                        Text)
 from sqlalchemy.sql import text
+from sqlalchemy.sql.sqltypes import TIMESTAMP
+
 from app.database import Base
 
 
