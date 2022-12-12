@@ -7,5 +7,11 @@ class PostBase(BaseModel):
     is_published: bool = True
 
 
-class InputPost(PostBase):
+class PostInput(PostBase):
     pass
+
+
+class PostOutput(PostBase):
+    title: str
+    content: str
+    is_published: bool

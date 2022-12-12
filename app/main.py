@@ -63,9 +63,8 @@ def get_post(id: int, db: Session = Depends(get_db)) -> models.Post:
     return post
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: schemas.InputPost, 
-                db: Session = Depends(get_db)) -> models.Post:
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.PostOutput)
+def create_post(post: schemas.PostInput, db: Session = Depends(get_db)) -> models.Post:
     # cursor.execute(
     #     """
     #     INSERT INTO posts (title, content, is_published) 
@@ -110,7 +109,7 @@ def delete_post(id: int, db: Session = Depends(get_db)) -> None:
 
 
 @app.put("/posts/{id}")
-def update_post(id: int, updated_post: schemas.InputPost, 
+def update_post(id: int, updated_post: schemas.PostInput, 
                 db: Session = Depends(get_db)) -> models.Post:
     # cursor.execute(
     #     """
