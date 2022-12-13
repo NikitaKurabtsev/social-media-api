@@ -25,7 +25,7 @@ app = FastAPI()
 
 # logger = Logger()
 
-# DatabaseConnector.create_connection()
+# DatabaseConnector.create_connection(logger)
 
 
 @app.get("/")
@@ -33,7 +33,7 @@ def root():
     return {"message": "welcome to my API"}
 
 
-@app.get("/posts")
+@app.get("/posts", response_model=List[schemas.PostOutput])
 def get_posts(db: Session = Depends(get_db)) -> List[models.Post]:
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
