@@ -26,13 +26,10 @@ def get_db():
         db.close()
 
 
-logger = Logger()
-
-
 class DatabaseConnector:
     """Make postgresql connetion and create cursor object"""
     @staticmethod
-    def create_connection():
+    def create_connection(logger):
         while True:
             try:
                 connection = psycopg2.connect(
