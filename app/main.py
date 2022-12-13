@@ -11,9 +11,9 @@ from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
 from sqlalchemy import update
 
-from app.utils import FilePrinter, Logger, TerminalPrinter
-from app import models
-from app.database import engine, get_db
+from . import utils
+from . import models
+from .database import engine, get_db
 from . import schemas
 from .database import DatabaseConnector
 
@@ -65,10 +65,9 @@ def get_post(id: int, db: Session = Depends(get_db)) -> models.Post:
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED,
-          response_model=schemas.PostOutput)
-def create_post(
-        post: schemas.PostInput,
-        db: Session = Depends(get_db)) -> models.Post:
+                    response_model=schemas.PostOutput)
+def create_post(post: schemas.PostInput, 
+                db: Session = Depends(get_db)) -> models.Post:
     # cursor.execute(
     #     """
     #     INSERT INTO posts (title, content, is_published)
@@ -139,3 +138,28 @@ def update_post(id: int, updated_post: schemas.PostInput,
     db.commit()
 
     return post_query.first()
+
+
+@app.post("/users", status_code=status.HTTP_201_CREATED,
+                    response_model=schemas.UserOutput)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    user.password = utils.hash(user.password)
+    new_user = models.User(**user.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
+
+
+@app.get("/users/{id}", response_model=schemas.UserOutput)
+def get_user(id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=f"user with id: {id} does not exist"
+        )
+
+    return user

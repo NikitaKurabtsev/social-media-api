@@ -1,6 +1,5 @@
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
-
-from pydantic import BaseModel
 
 
 class PostBase(BaseModel):
@@ -14,7 +13,21 @@ class PostInput(PostBase):
 
 
 class PostOutput(PostBase):
+    id: int
     created_at: datetime
-    
+
+    class Config:
+        orm_mode = True
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserOutput(BaseModel):
+    id: str
+    email: EmailStr
+
     class Config:
         orm_mode = True
