@@ -13,8 +13,9 @@ router = APIRouter(
 
 @router.post("/", status_code=status.HTTP_201_CREATED,
              response_model=schemas.UserOutput)
-def create_user(user: schemas.UserCreate, 
-                db: Session = Depends(get_db)) -> models.User:
+def create_user(
+        user: schemas.UserCreate,
+        db: Session = Depends(get_db)) -> models.User:
     user.password = utils.hash(user.password)
     new_user = models.User(**user.dict())
     db.add(new_user)
@@ -30,7 +31,7 @@ def get_user(id: int, db: Session = Depends(get_db)):
 
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, 
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f"user with id: {id} does not exist"
         )
 
