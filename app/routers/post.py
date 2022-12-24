@@ -16,7 +16,9 @@ router = APIRouter(
 @router.get("/", response_model=List[schemas.PostOutput])
 def get_posts(
     db: Session = Depends(get_db), 
-    current_user: str = Depends(oauth2.get_current_user)
+    current_user: str = Depends(oauth2.get_current_user),
+    limit = 5, 
+    skip = 0
     ) -> List[models.Post]:
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
@@ -26,7 +28,11 @@ def get_posts(
     #     .query(models.Post) \
     #     .filter(models.Post.owner == current_user.username) \
     #     .all()
-    posts = db.query(models.Post).all()
+    posts = db \
+        .query(models.Post) \
+        .limit(limit) \
+        .offset(skip) \
+        .all()
 
     return posts
 
