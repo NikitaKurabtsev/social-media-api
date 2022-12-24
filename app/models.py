@@ -1,5 +1,4 @@
-from sqlalchemy import (BOOLEAN, Boolean, Column, ForeignKey, Integer, String,
-                        Text)
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.sql import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
@@ -15,6 +14,8 @@ class Post(Base):
     is_published = Column(Boolean, server_default="True")
     created_at = Column(TIMESTAMP(timezone=True),
                         nullable=True, server_default=text("now()"))
+    owner = Column(String, ForeignKey("users.email", ondelete="CASCADE"),
+                      nullable=False)
 
 
 class User(Base):

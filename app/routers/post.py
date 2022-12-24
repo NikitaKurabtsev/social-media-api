@@ -16,17 +16,26 @@ router = APIRouter(
 @router.get("/", response_model=List[schemas.PostOutput])
 def get_posts(
     db: Session = Depends(get_db), 
-    current_user = Depends(oauth2.get_current_user)
+    current_user: str = Depends(oauth2.get_current_user)
     ) -> List[models.Post]:
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
+
+    # return only current users posts
+    # posts = db \
+    #     .query(models.Post) \
+    #     .filter(models.Post.owner == current_user.username) \
+    #     .all()
     posts = db.query(models.Post).all()
 
     return posts
 
 
 @router.get("/{id}", response_model=schemas.PostOutput)
-def get_post(id: int, db: Session = Depends(get_db)) -> models.Post:
+def get_post(
+    id: int, db: Session = Depends(get_db),
+    current_user: str = Depends(oauth2.get_current_user)
+    ) -> models.Post:
     # cursor.execute(
     #     """
     #     SELECT *
@@ -49,8 +58,11 @@ def get_post(id: int, db: Session = Depends(get_db)) -> models.Post:
 
 @router.post("/", status_code=status.HTTP_201_CREATED,
              response_model=schemas.PostOutput)
-def create_post(post: schemas.PostInput,
-                db: Session = Depends(get_db)) -> models.Post:
+def create_post(
+    post: schemas.PostInput,
+    db: Session = Depends(get_db),
+    current_user: str = Depends(oauth2.get_current_user)
+    ) -> models.Post:
     # cursor.execute(
     #     """
     #     INSERT INTO posts (title, content, is_published)
@@ -62,6 +74,7 @@ def create_post(post: schemas.PostInput,
     # new_post = cursor.fetchone()
     # connection.commit()
     new_post = models.Post(**post.dict())
+    new_post.owner = current_user.username
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
@@ -70,7 +83,10 @@ def create_post(post: schemas.PostInput,
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, db: Session = Depends(get_db)) -> None:
+def delete_post(
+    id: int, db: Session = Depends(get_db),
+    current_user: str = Depends(oauth2.get_current_user)
+    ) -> None:
     # cursor.execute(
     #     """
     #     DELETE FROM posts
@@ -88,6 +104,12 @@ def delete_post(id: int, db: Session = Depends(get_db)) -> None:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exists"
         )
+    if post.owner != current_user.username:
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail=f"you not the owner of this post"
+        )
+
     db.delete(post)
     db.commit()
 
@@ -95,8 +117,11 @@ def delete_post(id: int, db: Session = Depends(get_db)) -> None:
 
 
 @router.put("/{id}", response_model=schemas.PostOutput)
-def update_post(id: int, updated_post: schemas.PostInput,
-                db: Session = Depends(get_db)) -> models.Post:
+def update_post(
+    id: int, updated_post: schemas.PostInput,
+    db: Session = Depends(get_db),
+    current_user: str = Depends(oauth2.get_current_user)
+    ) -> models.Post:
     # cursor.execute(
     #     """
     #     UPDATE posts
@@ -117,6 +142,12 @@ def update_post(id: int, updated_post: schemas.PostInput,
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exists"
         )
+    if post.owner != current_user.username:
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail=f"you not the owner of this post"
+        )
+
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
 

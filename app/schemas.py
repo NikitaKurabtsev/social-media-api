@@ -17,6 +17,7 @@ class PostInput(PostBase):
 class PostOutput(PostBase):
     id: int
     created_at: datetime
+    owner: str
 
     class Config:
         orm_mode = True
