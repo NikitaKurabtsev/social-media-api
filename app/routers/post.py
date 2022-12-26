@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import (APIRouter, Depends, FastAPI, HTTPException, Response,
                      status)
@@ -15,10 +15,11 @@ router = APIRouter(
 
 @router.get("/", response_model=List[schemas.PostOutput])
 def get_posts(
-    db: Session = Depends(get_db), 
+    db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user),
+    search: Optional[str] = "",
     limit = 5, 
-    skip = 0
+    skip = 0,
     ) -> List[models.Post]:
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
@@ -30,6 +31,7 @@ def get_posts(
     #     .all()
     posts = db \
         .query(models.Post) \
+        .filter(models.Post.title.contains(search)) \
         .limit(limit) \
         .offset(skip) \
         .all()
