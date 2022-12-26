@@ -7,11 +7,19 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from app.config import settings
 from app.utils import FilePrinter, Logger, TerminalPrinter
 
 # SQLALCHEMY_DATABASE_URL = os.getenv("PSQL_URL")
 
-engine = create_engine("postgresql://postgres:prestigio@localhost/social_media_api")
+engine = create_engine(
+    f"postgresql"
+    f"://{settings.database_username}"
+    f":{settings.database_password}"
+    f"@{settings.database_hostname}"
+    f":{settings.database_port}"
+    f"/{settings.database_name}"
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
