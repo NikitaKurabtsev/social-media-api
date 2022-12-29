@@ -10,8 +10,6 @@ from sqlalchemy.orm import sessionmaker
 from app.config import settings
 from app.utils import FilePrinter, Logger, TerminalPrinter
 
-# SQLALCHEMY_DATABASE_URL = os.getenv("PSQL_URL")
-
 engine = create_engine(
     f"postgresql"
     f"://{settings.database_username}"
