@@ -3,6 +3,7 @@ from typing import List, Optional
 from fastapi import (APIRouter, Depends, FastAPI, HTTPException, Response,
                      status)
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from .. import models, oauth2, schemas
 from ..database import get_db
@@ -13,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[schemas.PostOutput])
+@router.get("/", response_model=List[schemas.PostLikeOutput])
 def get_posts(
     db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user),
@@ -29,14 +30,21 @@ def get_posts(
     #     .query(models.Post) \
     #     .filter(models.Post.owner == current_user.username) \
     #     .all()
-    posts = db \
-        .query(models.Post) \
+  
+    result = db \
+        .query(models.Post, func.count(models.Like.post_id).label("likes")) \
+        .join(
+            models.Like, 
+            models.Post.id == models.Like.post_id, 
+            isouter=True
+            ) \
+        .group_by(models.Post.id) \
         .filter(models.Post.title.contains(search)) \
         .limit(limit) \
         .offset(skip) \
         .all()
 
-    return posts
+    return result
 
 
 @router.get("/{id}", response_model=schemas.PostOutput)

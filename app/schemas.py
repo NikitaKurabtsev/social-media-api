@@ -51,6 +51,11 @@ class PostOutput(PostBase):
         orm_mode = True
 
 
+class PostLikeOutput(BaseModel):
+    Post: PostOutput
+    likes: int
+
+
 class LikeInput(BaseModel):
     post_id: int
     direction: conint(le=1, ge=0)
