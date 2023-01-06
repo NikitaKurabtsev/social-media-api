@@ -31,7 +31,7 @@ def get_posts(
     #     .filter(models.Post.owner == current_user.username) \
     #     .all()
   
-    result = db \
+    posts = db \
         .query(models.Post, func.count(models.Like.post_id).label("likes")) \
         .join(
             models.Like, 
@@ -44,10 +44,10 @@ def get_posts(
         .offset(skip) \
         .all()
 
-    return result
+    return posts
 
 
-@router.get("/{id}", response_model=schemas.PostOutput)
+@router.get("/{id}", response_model=schemas.PostLikeOutput)
 def get_post(
     id: int, db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user)
@@ -61,7 +61,16 @@ def get_post(
     #     (str(id))
     # )
     # post = cursor.fetchone()
-    post = db.query(models.Post).get(id)
+    post = db \
+        .query(models.Post, func.count(models.Like.post_id).label("likes")) \
+        .join(
+            models.Like, 
+            models.Post.id == models.Like.post_id, 
+            isouter=True
+            ) \
+        .group_by(models.Post.id) \
+        .filter(models.Post.id == id) \
+        .first()
 
     if not post:
         raise HTTPException(
