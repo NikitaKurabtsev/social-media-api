@@ -98,8 +98,9 @@ def create_post(
     # )
     # new_post = cursor.fetchone()
     # connection.commit()
+    print(current_user)
     new_post = models.Post(**post.dict())
-    new_post.owner = current_user.username
+    new_post.owner = current_user.id
     db.add(new_post)
     db.commit()
     db.refresh(new_post)

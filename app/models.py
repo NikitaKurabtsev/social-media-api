@@ -15,7 +15,7 @@ class Post(Base):
     is_published = Column(Boolean, server_default="True")
     created_at = Column(TIMESTAMP(timezone=True),
                         nullable=True, server_default=text("now()"))
-    owner = Column(String, ForeignKey("users.email", ondelete="CASCADE"),
+    owner = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"),
                       nullable=False)
     owner_data = relationship("User")
 

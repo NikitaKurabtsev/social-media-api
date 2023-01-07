@@ -1,8 +1,8 @@
 """auto-migrations
 
-Revision ID: 060a8c6f10ea
+Revision ID: faeea63fb61a
 Revises: 
-Create Date: 2023-01-07 17:33:05.450557
+Create Date: 2023-01-07 17:52:35.806437
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '060a8c6f10ea'
+revision = 'faeea63fb61a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,8 +32,8 @@ def upgrade() -> None:
     sa.Column('content', sa.String(), nullable=False),
     sa.Column('is_published', sa.Boolean(), server_default='True', nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('owner', sa.String(), nullable=False),
-    sa.ForeignKeyConstraint(['owner'], ['users.email'], ondelete='CASCADE'),
+    sa.Column('owner', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['owner'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('likes',
