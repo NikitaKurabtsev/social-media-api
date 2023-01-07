@@ -46,7 +46,7 @@ def get_posts(
 
     return posts
 
-
+ 
 @router.get("/{id}", response_model=schemas.PostLikeOutput)
 def get_post(
     id: int, db: Session = Depends(get_db),
