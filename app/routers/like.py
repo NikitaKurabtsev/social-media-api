@@ -35,13 +35,12 @@ def like(
     if like.direction == 1:
         if found_like:
             raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=(
-                f"user with id: {current_user.id} "
-                f"already likes post with id: {like.post_id}"
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    f"user with id: {current_user.id} "
+                    f"already likes post with id: {like.post_id}"
+                )
             )
-        )
-        # new_like = models.Like(**like.dict())
         new_like = models.Like(post_id=like.post_id, user_id=current_user.id)
         db.add(new_like)
         db.commit()

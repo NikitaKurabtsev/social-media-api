@@ -19,8 +19,8 @@ def get_posts(
     db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user),
     search: Optional[str] = "",
-    limit = 5, 
-    skip = 0,
+    limit=5,
+    skip=0,
     ) -> List[models.Post]:
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
