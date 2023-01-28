@@ -52,10 +52,10 @@ class DatabaseConnector:
             except Exception as error:
                 logger.log(
                     f"Connecting to Databse failed with error: {error}",
-                     FilePrinter
+                    FilePrinter
                 )
                 logger.log(
-                    f"Connecting failed, error: {error}", 
+                    f"Connecting failed, error: {error}",
                     TerminalPrinter
                 )
                 time.sleep(5)
