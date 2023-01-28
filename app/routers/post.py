@@ -129,7 +129,7 @@ def delete_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exists"
         )
-    if post.owner != current_user.username:
+    if post.owner != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail=f"you not the owner of this post"
@@ -167,7 +167,7 @@ def update_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exists"
         )
-    if post.owner != current_user.username:
+    if post.owner != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
             detail=f"you not the owner of this post"

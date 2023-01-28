@@ -1,5 +1,4 @@
 from app import schemas
-from tests.database import client, test_user, session
 
 
 def test_root(client):
@@ -22,7 +21,12 @@ def test_create_user(client):
 
 def test_get_user(client, test_user):
     response = client.get("/users/1")
-    wrong_response = client.get("/users/2")
 
     assert response.status_code == 200
-    assert wrong_response.status_code == 404
+
+
+def test_get_not_exists_user(client):
+    response = client.get("/users/2")
+
+    assert response.status_code == 404
+    assert response.json().get("detail") == "user with id: 2 does not exist"
