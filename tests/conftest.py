@@ -1,14 +1,13 @@
+import pytest
 from fastapi.testclient import TestClient
-from app.main import app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import pytest
 
+from app import models
 from app.config import settings
 from app.database import Base, get_db
+from app.main import app
 from app.oauth2 import create_access_token
-from app import models
-
 
 engine = create_engine(
     f"postgresql"

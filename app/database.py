@@ -8,7 +8,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
-from app.utils import FilePrinter, Logger, TerminalPrinter
+
+# from app.utils import FilePrinter, Logger, TerminalPrinter
 
 engine = create_engine(
     f"postgresql"
@@ -32,30 +33,30 @@ def get_db():
         db.close()
 
 
-class DatabaseConnector:
-    """Make postgresql connetion and create cursor object"""
-    @staticmethod
-    def create_connection(logger):
-        while True:
-            try:
-                connection = psycopg2.connect(
-                    host=os.getenv("HOST"), 
-                    database=os.getenv("DATABASE"), 
-                    user=os.getenv("PSQL_USER"), 
-                    password=os.getenv("PASSWORD"), 
-                    cursor_factory=RealDictCursor
-                )
-                cursor = connection.cursor()
-                logger.log("Succesfull Database connection", FilePrinter)
-                break
+# class DatabaseConnector:
+#     """Make postgresql connetion and create cursor object"""
+#     @staticmethod
+#     def create_connection(logger):
+#         while True:
+#             try:
+#                 connection = psycopg2.connect(
+#                     host=os.getenv("HOST"), 
+#                     database=os.getenv("DATABASE"), 
+#                     user=os.getenv("PSQL_USER"), 
+#                     password=os.getenv("PASSWORD"), 
+#                     cursor_factory=RealDictCursor
+#                 )
+#                 cursor = connection.cursor()
+#                 logger.log("Succesfull Database connection", FilePrinter)
+#                 break
 
-            except Exception as error:
-                logger.log(
-                    f"Connecting to Databse failed with error: {error}",
-                    FilePrinter
-                )
-                logger.log(
-                    f"Connecting failed, error: {error}",
-                    TerminalPrinter
-                )
-                time.sleep(5)
+#             except Exception as error:
+#                 logger.log(
+#                     f"Connecting to Databse failed with error: {error}",
+#                     FilePrinter
+#                 )
+#                 logger.log(
+#                     f"Connecting failed, error: {error}",
+#                     TerminalPrinter
+#                 )
+#                 time.sleep(5)
